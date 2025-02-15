@@ -1,0 +1,31 @@
+[project]
+name = "ai_summit_hackathon_an2i"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "openai",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.13.0",
+    "pytest-dotenv>=0.5.2",
+    "pytest>=8.3.3",
+    "ruff>=0.7.4",
+]
+
+[tool.mypy]
+strict = true
+files = ["workspace/src"]
+plugins = ["pydantic.mypy"]
+
+[tool.pytest.ini_options]
+env_files = [".env"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+pythonpath = [
+  "workspace/src",
+]
