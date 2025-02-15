@@ -54,10 +54,18 @@ additional_medical_information = "Lab tests are normal; Chest X-ray is unremarka
 report_date = "2025-02-15"
 doctor_name = "Dr. Emily Carter"
 facility_name = "City Hospital"
+conversation = """Patient: I have been experiencing chest pain. Doctor: When did the pain start?
+Patient: It started last night and has been persistent since then.
+Doctor: Have you experienced any shortness of breath or dizziness with the pain?
+Patient: No, I haven't experienced any other symptoms with the chest pain.
+Doctor: I will conduct a physical examination to assess the situation further."""
+
+
 
 # Format the realistic template with its own variables
 formatted_template = generate_prompt(
     prompt_template=report_generation_template,
+    conversation=conversation,
     patient_information=patient_information,
     medical_history=medical_history,
     additional_notes=additional_notes,

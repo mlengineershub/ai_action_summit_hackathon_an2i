@@ -10,6 +10,11 @@ report_generation_template = """ Your task is to generate a full medical report 
 
 ---
 
+#### Conversation between Doctor and Patient
+{conversation}
+
+---
+
 #### Patient Information  
 {patient_information}  
 
