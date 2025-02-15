@@ -129,7 +129,7 @@ def generate_search_summary(client: OpenAI, prompt: str) -> dict[str, Any]:
 # Example usage:
 if __name__ == "__main__":
     client = initialize_client()
-    query: str = "chest pain without shortness of breath"
+    query: str = "atypical angina in normotensive patients"
     result: SearchResult = search_medical_articles(query)
 
     # Gather all abstracts into one big string

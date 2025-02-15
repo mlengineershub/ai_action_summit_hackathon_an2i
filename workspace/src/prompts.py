@@ -104,3 +104,15 @@ summarize_ordonnances_prompt_template = """Summarize the medication data from mu
 {doctor_prescriptions}
 ---
 Full Summarized Medication Data"""
+
+detect_medical_prescription_anomaly_system_prompt = "You are a Medical AI Assistant. You have been asked to detect any anomalies in a patient's behaviour related to their medication prescription."
+
+detect_medical_prescription_anomaly_prompt_template = """Detect any anomalies in the patient's behavior related to their medication prescription. The prescription contains information about the medication, dosage, and frequency of use. Analyze the patient's behavior and identify any discrepancies or irregularities in their medication intake.
+---
+#### Doctor's Prescription
+{doctor_prescription}
+---
+#### Patient's Historical Medication Data
+{patient_medication_history}
+---
+Anomalies Detected"""
