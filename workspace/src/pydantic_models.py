@@ -20,3 +20,7 @@ class ConsultationReport(BaseModel):
 
 class SearchPropositions(BaseModel):
     search_propositions: list[str]
+
+class SearchSummary(BaseModel):
+    search_summary: str
+    key_insights: list[str]

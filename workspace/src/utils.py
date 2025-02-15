@@ -46,7 +46,7 @@ def generate_structured_response(
 ) -> dict[str, Any]:
     try:
         response = client.beta.chat.completions.parse(
-            model="ministral-8b-latest",
+            model="mistral-large-latest",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
