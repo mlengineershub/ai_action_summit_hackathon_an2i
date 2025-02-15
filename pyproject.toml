@@ -5,6 +5,7 @@ description = ""
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "ipykernel>=6.29.5",
     "openai",
 ]
 
@@ -14,6 +15,8 @@ dev = [
     "pytest-dotenv>=0.5.2",
     "pytest>=8.3.3",
     "ruff>=0.7.4",
+    "openai>=1.63.0",
+    "ipykernel>=6.29.5",
 ]
 
 [tool.mypy]
