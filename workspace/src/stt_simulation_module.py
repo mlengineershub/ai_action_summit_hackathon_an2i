@@ -1,10 +1,11 @@
 from typing import List, Generator
 import time
+from typing import Generator, List, Dict, Any
 
 
 def stream_speech_buffer(
     speeches: List[str], buffer_size: int = 512, delay: float = 0.1
-) -> Generator[str, None, None]:
+) -> Generator[Dict[str, Any], None, None]:
     """
     Stream speeches through a fixed-size buffer.
 
