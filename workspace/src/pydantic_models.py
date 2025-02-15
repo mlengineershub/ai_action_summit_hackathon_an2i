@@ -16,3 +16,7 @@ class ConsultationReport(BaseModel):
     treatment: list[str]
     keywords: list[str]
     summary: str
+
+
+class SearchPropositions(BaseModel):
+    search_propositions: list[str]
