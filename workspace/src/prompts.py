@@ -85,3 +85,22 @@ extract_medical_points_prompt_template = """Extract the pertinent medical points
 {previous_medical_history}
 ---
 Pertinent Medical Points"""
+
+extract_ordonnance_data_system_prompt = "You are a Medical AI Assistant. You have been asked to extract the medication data from a doctor's prescription."
+
+extract_ordonnance_data_prompt_template = """Extract the medication data from the doctor's prescription. The prescription contains information about the medication, dosage, and frequency of use. The extracted data should be structured and organized for easy reference.
+Summarize the medication data in a clear and concise paragraph.
+---
+#### Doctor's Prescription
+{doctor_prescription}
+---
+Summerized Medication Data"""
+
+summarize_ordonnances_system_prompt = "You are a Medical AI Assistant. You have been asked to summarize multiple doctor's prescriptions into a concise format."
+
+summarize_ordonnances_prompt_template = """Summarize the medication data from multiple doctor's prescriptions into a concise format. The summary should include the medication names, dosages, and frequencies of use for each prescription.
+---
+#### Doctor's Prescriptions
+{doctor_prescriptions}
+---
+Full Summarized Medication Data"""
