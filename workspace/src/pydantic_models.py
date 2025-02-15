@@ -29,3 +29,7 @@ class SearchSummary(BaseModel):
 
 class FollowUpQuestions(BaseModel):
     follow_up_questions: list[str]
+
+
+class PertinentMedicalPoints(BaseModel):
+    pertinent_medical_points: list[str]

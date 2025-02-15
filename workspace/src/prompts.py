@@ -73,3 +73,15 @@ follow_up_questions_prompt_template = """Based on the conversation between the d
 {conversation}
 ---
 Follow-up Questions"""
+
+extract_medical_points_system_prompt = "You are a Medical AI Assistant. You have been asked to extract pertinent medical points from a conversation between a doctor and a patient. A pertinent point is any information that is crucial and that the doctor should not forget or overlook."
+
+extract_medical_points_prompt_template = """Extract the pertinent medical points from the conversation between the doctor and the patient. These points are crucial for the doctor to consider when diagnosing the patient's condition or planning the treatment.
+---
+#### Conversation between Doctor and Patient
+{conversation}
+---
+#### Patient Previous Medical 
+{previous_medical_history}
+---
+Pertinent Medical Points"""
