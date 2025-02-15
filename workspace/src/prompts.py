@@ -64,3 +64,12 @@ Ensure that the summary and the key_insights are informative and contain medical
 {medical_articles}
 ---
 #### Summary"""
+
+follow_up_questions_system_prompt = "You are a Medical AI Assistant. You have been asked to generate follow-up questions based on a conversation between a doctor and a patient."
+
+follow_up_questions_prompt_template = """Based on the conversation between the doctor and the patient, generate follow-up questions that the doctor might ask to further understand the patient's condition. The questions should be relevant to the symptoms and medical history discussed in the conversation.
+---
+#### Conversation between Doctor and Patient
+{conversation}
+---
+Follow-up Questions"""

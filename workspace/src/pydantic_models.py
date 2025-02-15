@@ -25,3 +25,7 @@ class SearchPropositions(BaseModel):
 class SearchSummary(BaseModel):
     search_summary: str
     key_insights: list[str]
+
+
+class FollowUpQuestions(BaseModel):
+    follow_up_questions: list[str]
