@@ -4,12 +4,9 @@ from typing import TypedDict, Any
 from openai import OpenAI
 from workspace.src.prompts import (
     summarize_search_system_prompt,
-    summarize_search_prompt_template,
 )
 from workspace.src.utils import (
     generate_structured_response,
-    generate_prompt,
-    initialize_client,
 )
 from workspace.src.pydantic_models import SearchSummary
 
@@ -126,27 +123,27 @@ def generate_search_summary(client: OpenAI, prompt: str) -> dict[str, Any]:
     return response
 
 
-# Example usage:
-if __name__ == "__main__":
-    client = initialize_client()
-    query: str = "chest pain without shortness of breath"
-    result: SearchResult = search_medical_articles(query)
+# # Example usage:
+# if __name__ == "__main__":
+#     client = initialize_client()
+#     query: str = "atypical angina in normotensive patients"
+#     result: SearchResult = search_medical_articles(query)
 
-    # Gather all abstracts into one big string
-    content_article: str = ""
-    for article in result["articles"]:
-        abstract: str = fetch_article_abstract(article["pmid"])
-        content_article += (
-            f"PMID {article['pmid']} - {article['title']}:\n{abstract}\n\n"
-        )
+#     # Gather all abstracts into one big string
+#     content_article: str = ""
+#     for article in result["articles"]:
+#         abstract: str = fetch_article_abstract(article["pmid"])
+#         content_article += (
+#             f"PMID {article['pmid']} - {article['title']}:\n{abstract}\n\n"
+#         )
 
-    print("Combined Article Content:\n")
-    print(content_article)
-    # create a mock summary of a patient condition that is related to chest pain
-    patient_condition = """The patient is a 45-year and has been experiencing chest pain without shortness of breath for the past 2 days. The pain is described as sharp and localized on the left side of the chest. The patient has no history of heart conditions or high blood pressure. The pain is not aggravated by physical activity or relieved by rest. The patient has not taken any medication for the pain."""
-    prompt = generate_prompt(
-        prompt_template=summarize_search_prompt_template,
-        patient_condition=patient_condition,
-        medical_articles=content_article,
-    )
-    response = generate_search_summary(client, prompt)
+#     print("Combined Article Content:\n")
+#     print(content_article)
+#     # create a mock summary of a patient condition that is related to chest pain
+#     patient_condition = """The patient is a 45-year and has been experiencing chest pain without shortness of breath for the past 2 days. The pain is described as sharp and localized on the left side of the chest. The patient has no history of heart conditions or high blood pressure. The pain is not aggravated by physical activity or relieved by rest. The patient has not taken any medication for the pain."""
+#     prompt = generate_prompt(
+#         prompt_template=summarize_search_prompt_template,
+#         patient_condition=patient_condition,
+#         medical_articles=content_article,
+#     )
+#     response = generate_search_summary(client, prompt)
