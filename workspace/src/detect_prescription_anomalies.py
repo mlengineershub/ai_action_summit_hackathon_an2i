@@ -29,18 +29,18 @@ def detect_prescription_anomalies(client: OpenAI, prompt: str) -> dict[str, Any]
 # Instructions: Take with food
 # """
 
-# # add a prescription that is not respected
-# prescription = """Patient: John Doe
-# Date of Birth: 01/01/1970
-# Date of Consultation: 01/01/2022
-# Doctor: Dr. Jane Smith
-# Medication: Amoxicillin 500mg
+# add a prescription that is not respected
+prescription = """Patient: John Doe
+Date of Birth: 01/01/1970
+Date of Consultation: 01/01/2022
+Doctor: Dr. Jane Smith
+Medication: Amoxicillin 500mg
 
-# Dosage: 1 capsule every 8 hours
-# Duration: 7 days
-# Refill: 0
-# Instructions: Take with food
-# """
+Dosage: 1 capsule every 8 hours
+Duration: 7 days
+Refill: 0
+Instructions: Take with food
+"""
 
 
 # prompt = generate_prompt(
