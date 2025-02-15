@@ -1,10 +1,7 @@
 from workspace.src.utils import (
-    initialize_client,
-    generate_prompt,
     generate_structured_response,
 )
 from workspace.src.prompts import (
-    follow_up_questions_prompt_template,
     follow_up_questions_system_prompt,
 )
 from openai import OpenAI

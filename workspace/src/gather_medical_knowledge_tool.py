@@ -4,12 +4,9 @@ from typing import TypedDict, Any
 from openai import OpenAI
 from workspace.src.prompts import (
     summarize_search_system_prompt,
-    summarize_search_prompt_template,
 )
 from workspace.src.utils import (
     generate_structured_response,
-    generate_prompt,
-    initialize_client,
 )
 from workspace.src.pydantic_models import SearchSummary
 

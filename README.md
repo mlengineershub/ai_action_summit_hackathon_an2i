@@ -16,7 +16,10 @@
    ```shell
    uv sync --all-extras --dev
    ```
-
+3. Before running scripts add the current directory to the PythonPath:
+```
+export PYTHONPATH=<root directory to ai_action_summit_hackathon_an2i>:$PYTHONPATH
+```
 
 
 ### Lint (check & fix)

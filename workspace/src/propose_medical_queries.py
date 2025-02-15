@@ -1,10 +1,7 @@
 from workspace.src.utils import (
-    initialize_client,
-    generate_prompt,
     generate_structured_response,
 )
 from workspace.src.prompts import (
-    search_proposition_prompt_template,
     search_proposition_system_prompt,
 )
 from openai import OpenAI

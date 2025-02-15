@@ -1,12 +1,7 @@
 from workspace.src.utils import (
-    initialize_client,
-    generate_prompt,
     generate_structured_response,
 )
-from workspace.src.prompts import (
-detect_medical_prescription_anomaly_system_prompt,
-detect_medical_prescription_anomaly_prompt_template
-)
+from workspace.src.prompts import detect_medical_prescription_anomaly_system_prompt
 from openai import OpenAI
 from workspace.src.pydantic_models import PrescriptionAnomalies
 from typing import Any
@@ -46,9 +41,6 @@ def detect_prescription_anomalies(client: OpenAI, prompt: str) -> dict[str, Any]
 # Refill: 0
 # Instructions: Take with food
 # """
-
-
-
 
 
 # prompt = generate_prompt(

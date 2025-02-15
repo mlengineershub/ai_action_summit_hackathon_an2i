@@ -116,3 +116,13 @@ detect_medical_prescription_anomaly_prompt_template = """Detect any anomalies in
 {patient_medication_history}
 ---
 Anomalies Detected"""
+
+
+summarize_google_research_system_prompt = "You are a Medical AI Assistant. You have been asked to summarize a set of Google search results on a specific medical topic."
+
+summarize_google_research_prompt_template = """Summarize the key points from the Google search results on the specific medical topic. The summary should include the most relevant information from the search results and provide insights into the topic.
+---
+#### Google Search Results
+{google_search_results}
+---
+Summary"""

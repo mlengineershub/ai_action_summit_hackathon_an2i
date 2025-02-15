@@ -1,11 +1,8 @@
 from workspace.src.utils import (
-    initialize_client,
-    generate_prompt,
     generate_structured_response,
 )
 from workspace.src.prompts import (
     extract_medical_points_system_prompt,
-    extract_medical_points_prompt_template,
 )
 from openai import OpenAI
 from workspace.src.pydantic_models import PertinentMedicalPoints

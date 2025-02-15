@@ -1,11 +1,8 @@
 from workspace.src.utils import (
-    initialize_client,
-    generate_prompt,
     generate_response,
 )
 from workspace.src.prompts import (
     extract_ordonnance_data_prompt_template,
-    summarize_ordonnances_prompt_template,
     summarize_ordonnances_system_prompt,
 )
 from openai import OpenAI

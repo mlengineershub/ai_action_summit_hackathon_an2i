@@ -1,10 +1,7 @@
 from workspace.src.utils import (
-    initialize_client,
-    generate_prompt,
     generate_structured_response,
 )
 from workspace.src.prompts import (
-    report_generation_template,
     report_generation_system_prompt,
 )
 from openai import OpenAI

@@ -34,5 +34,6 @@ class FollowUpQuestions(BaseModel):
 class PertinentMedicalPoints(BaseModel):
     pertinent_medical_points: list[str]
 
+
 class PrescriptionAnomalies(BaseModel):
     prescription_anomalies: list[str]
