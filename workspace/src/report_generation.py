@@ -61,7 +61,6 @@ Patient: No, I haven't experienced any other symptoms with the chest pain.
 Doctor: I will conduct a physical examination to assess the situation further."""
 
 
-
 # Format the realistic template with its own variables
 formatted_template = generate_prompt(
     prompt_template=report_generation_template,

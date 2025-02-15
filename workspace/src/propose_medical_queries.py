@@ -11,12 +11,14 @@ from openai import OpenAI
 from workspace.src.pydantic_models import SearchPropositions
 from typing import Any
 
+
 def generate_search_propositions(client: OpenAI, prompt: str) -> dict[str, Any]:
     system_prompt = search_proposition_system_prompt
     response: dict[str, Any] = generate_structured_response(
         client, system_prompt, prompt, SearchPropositions
     )
     return response
+
 
 # Example usage: ======================================== (will be removed)
 client = initialize_client()
