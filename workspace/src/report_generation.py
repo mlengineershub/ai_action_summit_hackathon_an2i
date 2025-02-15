@@ -8,6 +8,7 @@ from openai import OpenAI
 from workspace.src.pydantic_models import ConsultationReport
 from typing import Any
 
+
 def generate_report(client: OpenAI, prompt: str) -> dict[str, Any]:
     system_prompt = report_generation_system_prompt
     response: dict[str, Any] = generate_structured_response(
