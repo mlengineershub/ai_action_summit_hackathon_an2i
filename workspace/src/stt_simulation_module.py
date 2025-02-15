@@ -45,11 +45,7 @@ def stream_speech_buffer(speeches: List[str], buffer_size: int = 512, delay: flo
 # Example usage
 def test_speech_streaming():
     # Sample speeches (you would replace these with your actual speeches)
-    speeches = [
-        "Doctor, I've been experiencing this persistent lower back pain for about three months now...",
-        "Based on your lab results and symptoms, I need to inform you that you have Type 2 diabetes...",
-        # ... add more speeches as needed
-    ]
+    speeches = read_speeches_from_file('doctor-patient-dialogues.md')
     
     # Stream the speeches through the buffer
     for chunk_data in stream_speech_buffer(speeches):
@@ -57,7 +53,72 @@ def test_speech_streaming():
         print(f"Speech: {chunk_data['speech_number']}/{len(speeches)}")
         print(f"Chunk: {chunk_data['chunk_number']}/{chunk_data['total_chunks']}")
         print(f"Size: {chunk_data['chunk_size']} bytes")
-        print(f"Content: {chunk_data['content'][:50]}...")  # Show first 50 chars of chunk
+        print(f"Content: {chunk_data['content']}...")
+
+def read_speeches_from_file(file_path: str) -> list[str]:
+    """
+    Read speeches from a text file and return them as a list of strings.
+    Each speech is assumed to be separated by a blank line.
+    
+    Args:
+        file_path (str): Path to the file containing the speeches
+        
+    Returns:
+        list[str]: List of speeches, each as a string
+    """
+    speeches = []
+    current_speech = []
+    
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            for line in file:
+                # Remove leading/trailing whitespace
+                line = line.strip()
+                
+                # If we encounter a numbered line (e.g., "1.", "2."), it's a new speech
+                if line and any(f"{i}." in line[:4] for i in range(1, 13)):
+                    # If we have collected lines for a previous speech, add it
+                    if current_speech:
+                        speeches.append(' '.join(current_speech))
+                        current_speech = []
+                    # Start collecting the new speech, excluding the number
+                    current_speech.append(line[line.find('.') + 1:].strip())
+                # Add non-empty lines to current speech
+                elif line:
+                    current_speech.append(line)
+            
+            # Add the last speech if there is one
+            if current_speech:
+                speeches.append(' '.join(current_speech))
+    
+    except FileNotFoundError:
+        print(f"Error: File not found at {file_path}")
+        return []
+    except Exception as e:
+        print(f"Error reading file: {str(e)}")
+        return []
+    
+    # Remove any empty speeches
+    speeches = [speech.strip() for speech in speeches if speech.strip()]
+    
+    print(f"Successfully loaded {len(speeches)} speeches")
+    return speeches
+
+def write_speeches_to_file(speeches: list[str], output_file: str):
+    """
+    Write speeches to a text file with proper formatting.
+    
+    Args:
+        speeches (list[str]): List of speeches to write
+        output_file (str): Path to the output file
+    """
+    try:
+        with open(output_file, 'w', encoding='utf-8') as file:
+            for i, speech in enumerate(speeches, 1):
+                file.write(f"{i}. {speech}\n\n")
+        print(f"Successfully wrote {len(speeches)} speeches to {output_file}")
+    except Exception as e:
+        print(f"Error writing to file: {str(e)}")
 
 if __name__ == "__main__":
     test_speech_streaming()
