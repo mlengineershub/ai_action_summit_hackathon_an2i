@@ -1,14 +1,22 @@
-from workspace.src.utils import initialize_client, generate_prompt, generate_response
+from workspace.src.utils import (
+    initialize_client,
+    generate_prompt,
+    generate_structured_response,
+)
 from workspace.src.prompts import (
     report_generation_template,
     report_generation_system_prompt,
 )
 from openai import OpenAI
+from workspace.src.pydantic_models import ConsultationReport
+from typing import Any
 
 
-def generate_report(client: OpenAI, prompt: str) -> str:
+def generate_report(client: OpenAI, prompt: str) -> dict[str, Any]:
     system_prompt = report_generation_system_prompt
-    response: str = generate_response(client, system_prompt, report_generation_template)
+    response: dict[str, Any] = generate_structured_response(
+        client, system_prompt, prompt, ConsultationReport
+    )
     return response
 
 
@@ -50,7 +58,6 @@ facility_name = "City Hospital"
 # Format the realistic template with its own variables
 formatted_template = generate_prompt(
     prompt_template=report_generation_template,
-    template=template,
     patient_information=patient_information,
     medical_history=medical_history,
     additional_notes=additional_notes,
@@ -58,4 +65,4 @@ formatted_template = generate_prompt(
 )
 
 response = generate_report(client, formatted_template)
-print(response)
+print("Response:", response)

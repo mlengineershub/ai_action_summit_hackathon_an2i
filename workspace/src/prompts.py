@@ -10,9 +10,6 @@ report_generation_template = """ Your task is to generate a full medical report 
 
 ---
 
-#### Template for Medical Report  
-{template}
-
 #### Patient Information  
 {patient_information}  
 
