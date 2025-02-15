@@ -41,7 +41,7 @@ search_proposition_system_prompt = (
     "You are a very helpful Medical AI Assistant. You have been asked to provide medical search propositions based on the conversation between a doctor and a patient."
 )
 
-search_proposition_prompt_template = """Based on the current conversation between the doctor and the patient, provide relevant search propositions that could help the doctor in diagnosing the patient's condition. 
+search_proposition_prompt_template = """Based on the current conversation between the doctor and the patient, provide relevant search propositions that could help the doctor in diagnosing the patient's condition. The search queries must be related to very niche medical topics that are related to the current conversation, and not general queires.
 Do not provide previously searched information.
 ---
 #### Conversation between Doctor and Patient
