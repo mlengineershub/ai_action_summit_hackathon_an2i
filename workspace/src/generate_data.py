@@ -3,6 +3,11 @@ from workspace.src.utils import (
     generate_prompt,
     generate_structured_response,
     generate_response,
+    get_database,
+    get_table,
+    insert,
+    find_one,
+    find,
 )
 from workspace.src.prompts import (
     report_generation_template,
@@ -11,64 +16,12 @@ from workspace.src.prompts import (
     prompt_template_synthese,
 )
 from workspace.src.pydantic_models import ConsultationReport
-from pymongo import MongoClient
 from typing import Any, List, Tuple
-from openai import OpenAIDict
-import urllib.parse
-from dotenv import load_dotenv
-import os
 from pymongo.database import Database
-from pymongo.collection import Collection
-from typing import Optional, Any, Dict, List
+from openai import OpenAI
 
-load_dotenv()
-USERNAME_MONGODB: str = os.getenv("USERNAME_MONGODB", "")
-PASSWORD_MONGODB: str = os.getenv("PASSWORD_MONGODB", "")
-INSTANCE_MONGODB: str = os.getenv("INSTANCE_MONGODB", "")
-REGION_MONGODB: str = os.getenv("REGION_MONGODB", "")
-PATH_TLS_CERTIFICATE_MONGODB: str = os.getenv("PATH_TLS_CERTIFICATE_MONGODB", "")
 
 CLIENT = initialize_client()
-
-
-
-def get_mongo_client() -> MongoClient:
-    username = urllib.parse.quote_plus(USERNAME_MONGODB)
-    password = urllib.parse.quote_plus(PASSWORD_MONGODB)  # URL-encode the colon
-    instance_id = INSTANCE_MONGODB
-    region = REGION_MONGODB  # the region of your database instance. "fr-par" if Paris
-    tls_certificate = PATH_TLS_CERTIFICATE_MONGODB  # path to your TLS certificate file
-    # Construct the connection string
-    connection_string = (
-        f"mongodb+srv://{username}:{password}@{instance_id}.mgdb.{region}.scw.cloud/"
-        f"?tls=true&tlsCAFile={tls_certificate}"
-    )
-    client = MongoClient(connection_string)
-
-    return client
-    # flake8: noqa
-
-def get_database(client: MongoClient)-> Database:
-    client = get_mongo_client()
-    db = client[USERNAME_MONGODB]
-    return db
-
-def get_table(db: Database,table_name: str) -> Collection:
-    return db[table_name]
-
-def create_index(table : Collection, fields: List[str]) -> None:
-    table.create_index(fields)
-
-def insert(table : Collection, document : Dict[str, Any] ) -> None:
-    table.insert_one(document)
-
-def find_one(table: Collection, query : Dict[str, Any]) -> Optional[Dict[str, Any]]:
-    return table.find_one(query)
-
-def find(table: Collection, query : Dict[str, Any]) -> List[Dict[str, Any]]:
-    return table.find(query)
-
-
 
 
 def aggregate_medical_history(summaries: str) -> str:
@@ -104,9 +57,10 @@ def generate_report(client: OpenAI, prompt: str) -> dict[str, Any]:
 
 def fetch_related_consultations(db: Database, ssn: str) -> Tuple[List[str], int]:
     consultations = get_table(db, table_name="Consultation")
+    # create_index(consultations, "keywords")
     # get all consultations with the same patient ID
     ssn_query = {"social_security_number": ssn}
-    related = find(consultations,ssn_query)
+    related = find(consultations, ssn_query)
     summaries = [consultation["intelligent_summary"] for consultation in related]
     last_reportID = max([consultation["reportID"] for consultation in related])
     return summaries, last_reportID
@@ -115,8 +69,8 @@ def fetch_related_consultations(db: Database, ssn: str) -> Tuple[List[str], int]
 def generate_and_insert_fake_data(
     ssn: str, report_date: str, conversation: str, patient_information: str
 ) -> None:
-    
     # Initialize MongoDB
+
     db = get_database()
 
     # Fetch related consultations and aggregate medical history
@@ -150,7 +104,7 @@ def generate_and_insert_fake_data(
         "intelligent_summary": new_report["intelligent_summary"],
     }
 
-    insert(db["Consultation"],consultation_data)
+    insert(db["Consultation"], consultation_data)
     print("New consultation inserted successfully.")
 
 
@@ -164,10 +118,11 @@ def add_new_patient(
     allergies: List[str],
 ) -> bool:
     # Initialize MongoDB
-    db = initialize_db()
+    db = get_database()
 
+    query = {"social_security_number": ssn}
     # Check whether the patient already exists
-    patient = db["Patient"].find_one({"social_security_number": ssn})
+    patient = find_one(get_table(db, "Patient"), query)
     if patient:
         print("Patient already exists in the database.")
         return False
