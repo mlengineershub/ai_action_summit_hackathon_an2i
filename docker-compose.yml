@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    command: python -m flask --app workspace.src.api run --host=0.0.0.0
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_APP=workspace.src.api
+      - FLASK_DEBUG=1
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    volumes:
+      - ./workspace:/app/workspace
+
+  celery-worker-llm:
+    build: .
+    command: celery -A workspace.src.celery_app worker --loglevel=info --queues=llm
+    environment:
+      - C_FORCE_ROOT=true
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    volumes:
+      - ./workspace:/app/workspace
+
+  celery-worker-api:
+    build: .
+    command: celery -A workspace.src.celery_app worker --loglevel=info --queues=api
+    environment:
+      - C_FORCE_ROOT=true
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    volumes:
+      - ./workspace:/app/workspace
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  flower:
+    build: .
+    command: celery -A workspace.src.celery_app flower --port=5555
+    ports:
+      - "5555:5555"
+    environment:
+      - FLOWER_BASIC_AUTH=admin:admin
+    depends_on:
+      - redis
+      - celery-worker-llm
+      - celery-worker-api
+    volumes:
+      - ./workspace:/app/workspace

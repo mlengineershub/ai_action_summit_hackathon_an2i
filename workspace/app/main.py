@@ -1,6 +1,8 @@
 import streamlit as st
 import requests
 import json
+import time
+from typing import Any, Optional, Dict
 
 # Configure the base URL for the API
 API_BASE_URL = "http://localhost:5000"
@@ -23,6 +25,26 @@ page = st.sidebar.selectbox(
         "Generate Report",
     ],
 )
+
+def get_task_result(task_id: str) -> Optional[Dict[str, Any]]:
+    """Poll the task status until it's completed and return the result."""
+    status: str = "processing"
+    result: Optional[Dict[str, Any]] = None
+    while status == "processing":
+        time.sleep(2)  # Wait for 2 seconds before polling again
+        response = requests.get(f"{API_BASE_URL}/task/{task_id}")
+        if response.status_code == 200:
+            data: Dict[str, Any] = response.json()
+            status = data.get("status", "")
+            if status == "completed":
+                result = data.get("result")
+            elif status == "failed":
+                st.error(f"Task failed: {data.get('error')}")
+                return None
+        else:
+            st.error(f"Error fetching task status: {response.status_code}")
+            return None
+    return result
 
 # Hello World
 if page == "Hello World":
@@ -56,8 +78,12 @@ elif page == "Detect Prescription Anomalies":
                         "patient_medication_history": patient_medication_history,
                     },
                 )
-                if response.status_code == 200:
-                    st.json(response.json())
+                if response.status_code == 202:
+                    task_id = response.json().get("task_id")
+                    with st.spinner("Processing..."):
+                        result = get_task_result(task_id)
+                    if result:
+                        st.json(result)
                 else:
                     st.error(f"Error: {response.status_code}")
             except requests.exceptions.ConnectionError:
@@ -80,8 +106,12 @@ elif page == "Extract Ordonnance":
                     f"{API_BASE_URL}/extract-ordonnance",
                     json={"doctor_prescription": doctor_prescription},
                 )
-                if response.status_code == 200:
-                    st.json(response.json())
+                if response.status_code == 202:
+                    task_id = response.json().get("task_id")
+                    with st.spinner("Processing..."):
+                        result = get_task_result(task_id)
+                    if result:
+                        st.json(result)
                 else:
                     st.error(f"Error: {response.status_code}")
             except requests.exceptions.ConnectionError:
@@ -107,8 +137,12 @@ elif page == "Summarize Ordonnances":
                     f"{API_BASE_URL}/summarize-ordonnances",
                     json={"doctor_prescriptions": prescriptions_list},
                 )
-                if response.status_code == 200:
-                    st.json(response.json())
+                if response.status_code == 202:
+                    task_id = response.json().get("task_id")
+                    with st.spinner("Processing..."):
+                        result = get_task_result(task_id)
+                    if result:
+                        st.json(result)
                 else:
                     st.error(f"Error: {response.status_code}")
             except requests.exceptions.ConnectionError:
@@ -132,23 +166,27 @@ elif page == "Search Medical Articles":
                     f"{API_BASE_URL}/search-medical-articles",
                     params={"query": query, "retmax": str(retmax)},
                 )
-                if response.status_code == 200:
-                    articles = response.json()
-                    st.json(articles)
-
-                    # Add button to fetch abstract for each article
-                    if "articles" in articles:
-                        for article in articles["articles"]:
-                            if st.button(f"Get Abstract for {article['pmid']}"):
-                                abstract_response = requests.get(
-                                    f"{API_BASE_URL}/fetch-article-abstract/{article['pmid']}"
-                                )
-                                if abstract_response.status_code == 200:
-                                    st.write(abstract_response.json()["abstract"])
-                                else:
-                                    st.error(
-                                        f"Error fetching abstract: {abstract_response.status_code}"
+                if response.status_code == 202:
+                    task_id = response.json().get("task_id")
+                    with st.spinner("Processing..."):
+                        result = get_task_result(task_id)
+                    if result:
+                        st.json(result)
+                        # Add button to fetch abstract for each article
+                        if "articles" in result:
+                            for article in result["articles"]:
+                                if st.button(f"Get Abstract for {article['pmid']}"):
+                                    abstract_response = requests.get(
+                                        f"{API_BASE_URL}/fetch-article-abstract/{article['pmid']}"
                                     )
+                                    if abstract_response.status_code == 200:
+                                        st.write(abstract_response.json()["abstract"])
+                                    else:
+                                        st.error(
+                                            f"Error fetching abstract: {abstract_response.status_code}"
+                                        )
+                    else:
+                        st.error("Failed to retrieve results.")
                 else:
                     st.error(f"Error: {response.status_code}")
             except requests.exceptions.ConnectionError:
@@ -176,8 +214,14 @@ elif page == "Generate Search Summary":
                         "medical_articles": articles_data,
                     },
                 )
-                if response.status_code == 200:
-                    st.json(response.json())
+                if response.status_code == 202:
+                    task_id = response.json().get("task_id")
+                    with st.spinner("Processing..."):
+                        result = get_task_result(task_id)
+                    if result:
+                        st.json(result)
+                    else:
+                        st.error("Failed to retrieve summary.")
                 else:
                     st.error(f"Error: {response.status_code}")
             except json.JSONDecodeError:
@@ -300,8 +344,14 @@ elif page == "Generate Report":
                         "additional_medical_information": additional_medical_information,
                     },
                 )
-                if response.status_code == 200:
-                    st.json(response.json())
+                if response.status_code == 202:
+                    task_id = response.json().get("task_id")
+                    with st.spinner("Processing..."):
+                        result = get_task_result(task_id)
+                    if result:
+                        st.json(result)
+                    else:
+                        st.error("Failed to retrieve report.")
                 else:
                     st.error(f"Error: {response.status_code}")
             except requests.exceptions.ConnectionError:
