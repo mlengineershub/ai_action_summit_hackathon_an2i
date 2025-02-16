@@ -2,13 +2,14 @@ from typing import List, Generator, Dict, Any
 import time
 import json
 
+
 def stream_speech_buffer(
     speeches: List[Dict[str, Any]], buffer_size: int = 512, delay: float = 0.1
 ) -> Generator[Dict[str, Any], None, None]:
     """Streams speeches in chunks with a buffer."""
     for speech_idx, speech in enumerate(speeches, 1):
         speech_text = speech.get("text", "")  # Change "content" to "text"
-        
+
         # Debug: Print the speech content to check if it's empty or malformed
         print(f"Speech {speech_idx} content: {repr(speech_text)}")
 
@@ -36,6 +37,7 @@ def stream_speech_buffer(
                 "content": chunk_text,
             }
 
+
 def test_speech_streaming() -> None:
     """..."""
     speeches = read_speeches_from_json("doctor-patient-dialogues.json")
@@ -45,6 +47,7 @@ def test_speech_streaming() -> None:
         print(f"Chunk: {chunk_data['chunk_number']}/{chunk_data['total_chunks']}")
         print(f"Size: {chunk_data['chunk_size']} bytes")
         print(f"Content: {chunk_data['content']}")
+
 
 def read_speeches_from_json(file_path: str) -> List[Dict[str, Any]]:
     """Reads speeches from a JSON file."""
@@ -64,6 +67,7 @@ def read_speeches_from_json(file_path: str) -> List[Dict[str, Any]]:
         print(f"Error reading JSON file: {str(e)}")
         return []
 
+
 def write_speeches_to_file(speeches: List[Dict[str, Any]], output_file: str) -> None:
     """..."""
     try:
@@ -72,6 +76,7 @@ def write_speeches_to_file(speeches: List[Dict[str, Any]], output_file: str) -> 
         print(f"Successfully wrote {len(speeches)} speeches to {output_file}")
     except Exception as e:
         print(f"Error writing to file: {str(e)}")
+
 
 if __name__ == "__main__":
     test_speech_streaming()
