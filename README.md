@@ -70,7 +70,7 @@ The Streamlit dashboard connects to the Flask API at `http://localhost:5000`.
    ```
 3. Before running scripts add the current directory to the PythonPath:
 ```
-export PYTHONPATH=<root directory to ai_action_summit_hackathon_an2i>:$PYTHONPATH
+export PYTHONPATH=/home/azzedine/Projects/ai_action_summit_hackathon_an2i:$PYTHONPATH
 ```
 
 ### Running the Services
