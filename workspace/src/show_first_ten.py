@@ -1,7 +1,5 @@
-from workspace.src.db_utils import (
-    get_database, 
-    get_table 
-)
+from workspace.src.db_utils import get_database, get_table
+
 
 def show_first_ten_entries(table_name: str = "Consultation") -> None:
     """
@@ -20,6 +18,7 @@ def show_first_ten_entries(table_name: str = "Consultation") -> None:
         print(f"\nEntry {i}:")
         for key, value in doc.items():
             print(f"{key}: {value}")
+
 
 # Example usage
 if __name__ == "__main__":
