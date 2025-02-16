@@ -4,21 +4,7 @@ import time
 def stream_speech_buffer(
     speeches: List[str], buffer_size: int = 512, delay: float = 0.1
 ) -> Generator[Dict[str, Any], None, None]:
-    """
-    Streams speeches through a fixed-size buffer, yielding chunks of the speech with metadata.
-
-    Args:
-        speeches (List[str]): A list of speech texts to be streamed.
-        buffer_size (int, optional): The size of each buffer chunk in bytes. Defaults to 512.
-        delay (float, optional): Delay time in seconds between yielding each chunk. Defaults to 0.1.
-
-    Yields:
-        Dict[str, Any]: A dictionary containing:
-            - 'speech_number': Index of the current speech.
-            - 'chunk_number': Index of the current chunk.
-            - 'total_chunks': Total number of chunks in the speech.
-            - 'chunk_size': Size of the current chunk in bytes.
-            - 'content': Text content of the current chunk.
+    """...
     """
     for speech_idx, speech in enumerate(speeches, 1):
         speech_bytes = speech.encode("utf-8")
@@ -42,7 +28,7 @@ def stream_speech_buffer(
             }
 
 def test_speech_streaming() -> None:
-    """Tests the speech streaming by reading speeches from a file and streaming them."""
+    """..."""
     speeches = read_speeches_from_file("doctor-patient-dialogues.md")
     for chunk_data in stream_speech_buffer(speeches):
         print("\nChunk Information:")
@@ -52,17 +38,9 @@ def test_speech_streaming() -> None:
         print(f"Content: {chunk_data['content']}...")
 
 def read_speeches_from_file(file_path: str) -> List[str]:
-    """
-    Reads speeches from a specified text file, identifying and splitting speeches by numbered sections.
-
-    Args:
-        file_path (str): Path to the file containing speeches.
-
-    Returns:
-        List[str]: A list of extracted speech texts.
-    """
-    speeches = []
-    current_speech = []
+    """..."""
+    speeches: List[str] = []
+    current_speech: List[str] = []
     try:
         with open(file_path, "r", encoding="utf-8") as file:
             for line in file:
@@ -87,13 +65,7 @@ def read_speeches_from_file(file_path: str) -> List[str]:
     return speeches
 
 def write_speeches_to_file(speeches: List[str], output_file: str) -> None:
-    """
-    Writes speeches to a specified output file, numbering each speech.
-
-    Args:
-        speeches (List[str]): A list of speeches to write.
-        output_file (str): Path to the output file.
-    """
+    """..."""
     try:
         with open(output_file, "w", encoding="utf-8") as file:
             for i, speech in enumerate(speeches, 1):
