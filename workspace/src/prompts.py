@@ -1,12 +1,13 @@
 report_generation_system_prompt = (
     "Generate a full medical report based on the following template."
 )
-report_generation_template = """ Your task is to generate a full medical report strictly following the provided template. You MUST NOT modify the format, structure, or section headers.  
-- Every section must be filled exactly as specified, using only the placeholders provided.  
-- If any information is missing, insert "Not Provided" instead of removing or modifying the structure.  
-- You are NOT allowed to change, rewrite, or add extra explanations.  
-- Do not summarize or interpret beyond what is provided. Just insert the correct details.  
-- Ensure professional medical terminology and formatting consistency.  
+
+report_generation_template = """ Your task is to generate a full medical report strictly following the provided template. You MUST NOT modify the format, structure, or section headers.
+- Every section must be filled exactly as specified, using only the placeholders provided.
+- If any information is missing, insert "Not Provided" instead of removing or modifying the structure.
+- You are NOT allowed to change, rewrite, or add extra explanations.
+- Do not summarize or interpret beyond what is provided. Just insert the correct details.
+- Ensure professional medical terminology and formatting consistency.
 
 ---
 
@@ -15,23 +16,18 @@ report_generation_template = """ Your task is to generate a full medical report 
 
 ---
 
-#### Patient Information  
-{patient_information}  
+#### Patient Information
+{patient_information}
 
 ---
 
-#### Medical History  
-{medical_history}  
+#### Medical History
+{medical_history}
 
 ---
 
-#### Additional Notes from the doctor
-{additional_notes}  
-
----
-
-#### Additional Medical Information
-{additional_medical_information}
+#### Anomaly Detection
+{anomaly_detection}
 
 ---
 #### Generated Report
@@ -126,3 +122,27 @@ summarize_google_research_prompt_template = """Summarize the key points from the
 {google_search_results}
 ---
 Summary"""
+
+system_prompt_synthese = (
+    """You are a professional expert in summerizing medical records."""
+)
+prompt_template_synthese = """
+Generate a medical record based on the following information:
+- Summaries of previous consultations: {summaries}
+
+** The Output should be a string precise and concise of the medical record. ** 
+
+Example:
+
+<Input>
+Summaries: "Hypertension; Diabetes; Previous Surgery: Appendectomy; Medications: Metformin, Lisinopril; Allergies: None,
+Patient exhibits flu symptoms and is advised rest and medication. Patient has a history of migraines and is currently experiencing severe headaches."
+</Input>
+
+<Output>
+"Patient has a history of hypertension, diabetes, and appendectomy. Current medications include Metformin and Lisinopril. No known allergies. Recently, the patient exhibited flu symptoms and was advised rest and medication. The patient also has a history of migraines and is currently experiencing severe headaches."
+</Output>
+
+<Input>
+    """
+# flake8: noqa

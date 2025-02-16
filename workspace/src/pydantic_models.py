@@ -2,7 +2,6 @@ from pydantic import BaseModel
 
 
 class Patient(BaseModel):
-    full_name: str
     age: str
     occupation: str
     sex: str
@@ -15,7 +14,7 @@ class ConsultationReport(BaseModel):
     pathology: str
     treatment: list[str]
     keywords: list[str]
-    summary: str
+    intelligent_summary: str
 
 
 class SearchPropositions(BaseModel):
