@@ -26,7 +26,7 @@ def get_mongo_client() -> MongoClient[Any]:
         f"mongodb+srv://{username}:{password}@{instance_id}.mgdb.{region}.scw.cloud/"
         f"?tls=true&tlsCAFile={tls_certificate}"
     )
-    client : MongoClient[Any] = MongoClient(connection_string)
+    client: MongoClient[Any] = MongoClient(connection_string)
 
     return client
     # flake8: noqa
