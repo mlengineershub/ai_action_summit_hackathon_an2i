@@ -12,6 +12,7 @@ from workspace.src.prompts import (
 )
 from workspace.src.pydantic_models import ConsultationReport
 from pymongo import MongoClient
+from pymongo.database import Database
 from typing import Any, List, Tuple
 from openai import OpenAI
 import urllib.parse
@@ -27,7 +28,7 @@ PATH_TLS_CERTIFICATE_MONGODB: str = os.getenv("PATH_TLS_CERTIFICATE_MONGODB", ""
 CLIENT = initialize_client()
 
 
-def get_mongo_client() -> MongoClient:
+def get_mongo_client() -> MongoClient[Any]:
     username = urllib.parse.quote_plus(USERNAME_MONGODB)
     password = urllib.parse.quote_plus(PASSWORD_MONGODB)  # URL-encode the colon
     instance_id = INSTANCE_MONGODB
@@ -38,13 +39,13 @@ def get_mongo_client() -> MongoClient:
         f"mongodb+srv://{username}:{password}@{instance_id}.mgdb.{region}.scw.cloud/"
         f"?tls=true&tlsCAFile={tls_certificate}"
     )
-    client = MongoClient(connection_string)
+    client : MongoClient[Any] = MongoClient(connection_string)
 
     return client
     # flake8: noqa
 
 
-def initialize_db() -> MongoClient:
+def initialize_db() -> Database[Any]:
     client = get_mongo_client()
     db = client[USERNAME_MONGODB]
     consultations = db["Consultation"]
@@ -83,7 +84,7 @@ def generate_report(client: OpenAI, prompt: str) -> dict[str, Any]:
     return response
 
 
-def fetch_related_consultations(db: MongoClient, ssn: str) -> Tuple[List[str], int]:
+def fetch_related_consultations(db: Database[Any], ssn: str) -> Tuple[List[str], int]:
     consultations = db["Consultation"]
     # get all consultations with the same patient ID
     related = consultations.find({"social_security_number": ssn})

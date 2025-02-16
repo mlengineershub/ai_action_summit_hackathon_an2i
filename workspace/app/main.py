@@ -26,6 +26,7 @@ page = st.sidebar.selectbox(
     ],
 )
 
+
 def get_task_result(task_id: str) -> Optional[Dict[str, Any]]:
     """Poll the task status until it's completed and return the result."""
     status: str = "processing"
@@ -45,6 +46,7 @@ def get_task_result(task_id: str) -> Optional[Dict[str, Any]]:
             st.error(f"Error fetching task status: {response.status_code}")
             return None
     return result
+
 
 # Hello World
 if page == "Hello World":

@@ -2,7 +2,10 @@ from typing import Any, Dict, List, Optional
 
 from workspace.src.celery_app import celery
 from workspace.src.detect_prescription_anomalies import detect_prescription_anomalies
-from workspace.src.extract_ordonnance_data import extract_ordonnance_data, summarize_ordonnances
+from workspace.src.extract_ordonnance_data import (
+    extract_ordonnance_data,
+    summarize_ordonnances,
+)
 from workspace.src.gather_medical_knowledge_tool import (
     search_medical_articles,
     generate_search_summary,
@@ -19,11 +22,10 @@ from workspace.src.prompts import (
 
 client = initialize_client()
 
-@celery.task(bind=True, name='workspace.src.tasks.detect_anomalies_task')
+
+@celery.task(bind=True, name="workspace.src.tasks.detect_anomalies_task")
 def detect_anomalies_task(
-    self: Any,
-    doctor_prescription: str,
-    patient_medication_history: str
+    self: Any, doctor_prescription: str, patient_medication_history: str
 ) -> Dict[str, Any]:
     """Celery task for detecting prescription anomalies."""
     prompt = generate_prompt(
@@ -33,11 +35,9 @@ def detect_anomalies_task(
     )
     return detect_prescription_anomalies(client, prompt)
 
-@celery.task(bind=True, name='workspace.src.tasks.extract_ordonnance_task')
-def extract_ordonnance_task(
-    self: Any,
-    doctor_prescription: str
-) -> Dict[str, Any]:
+
+@celery.task(bind=True, name="workspace.src.tasks.extract_ordonnance_task")
+def extract_ordonnance_task(self: Any, doctor_prescription: str) -> Dict[str, Any]:
     """Celery task for extracting ordonnance data."""
     prompt = generate_prompt(
         extract_ordonnance_data_prompt_template,
@@ -45,10 +45,10 @@ def extract_ordonnance_task(
     )
     return {"extracted_data": extract_ordonnance_data(client, prompt)}
 
-@celery.task(bind=True, name='workspace.src.tasks.summarize_ordonnances_task')
+
+@celery.task(bind=True, name="workspace.src.tasks.summarize_ordonnances_task")
 def summarize_ordonnances_task(
-    self: Any,
-    doctor_prescriptions: List[str]
+    self: Any, doctor_prescriptions: List[str]
 ) -> Dict[str, str]:
     """Celery task for summarizing multiple ordonnances."""
     prompt = generate_prompt(
@@ -57,20 +57,18 @@ def summarize_ordonnances_task(
     )
     return {"summary": summarize_ordonnances(client, prompt)}
 
-@celery.task(bind=True, name='workspace.src.tasks.search_articles_task')
+
+@celery.task(bind=True, name="workspace.src.tasks.search_articles_task")
 def search_articles_task(
-    self:Any,
-    query: str,
-    retmax: Optional[int] = 5
+    self: Any, query: str, retmax: Optional[int] = 5
 ) -> Dict[str, Any]:
     """Celery task for searching medical articles."""
     return {"results": search_medical_articles(query, retmax or 5)}
 
-@celery.task(bind=True, name='workspace.src.tasks.generate_search_summary_task')
+
+@celery.task(bind=True, name="workspace.src.tasks.generate_search_summary_task")
 def generate_search_summary_task(
-    self: Any,
-    patient_condition: str,
-    medical_articles: List[Dict[str, Any]]
+    self: Any, patient_condition: str, medical_articles: List[Dict[str, Any]]
 ) -> Dict[str, Any]:
     """Celery task for generating search summaries."""
     prompt = generate_prompt(
@@ -80,14 +78,15 @@ def generate_search_summary_task(
     )
     return generate_search_summary(client, prompt)
 
-@celery.task(bind=True, name='workspace.src.tasks.generate_report_task')
+
+@celery.task(bind=True, name="workspace.src.tasks.generate_report_task")
 def generate_report_task(
     self: Any,
     conversation: str,
     patient_information: Dict[str, Any],
     medical_history: str,
     additional_notes: str,
-    additional_medical_information: str
+    additional_medical_information: str,
 ) -> Dict[str, Any]:
     """Celery task for generating medical reports."""
     prompt = generate_prompt(
