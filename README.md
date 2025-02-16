@@ -28,8 +28,8 @@ Our system implements a multi-faceted approach to medical analysis and prescript
 ### Generated Reports
 
 Access our sample medical reports and analysis:
-- [Technical Report](reports/Tech Report - Ai Action Summit.pdf)
-- [Business Plan](reports/buisness plan - action summit.pdf)
+- [Technical Report]("reports/Tech Report - Ai Action Summit.pdf")
+- [Business Plan]("reports/buisness plan - action summit.pdf")
 
 
 ## Flask API Service
