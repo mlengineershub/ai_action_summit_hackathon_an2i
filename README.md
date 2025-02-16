@@ -103,8 +103,8 @@ The Streamlit dashboard connects to the Flask API at `http://localhost:5000`.
 ```
 export PYTHONPATH=/home/azzedine/Projects/ai_action_summit_hackathon_an2i:$PYTHONPATH
 ```
-export PYTHONPATH=/home/azzedine/Projects/ai_action_summit_hackathon_an2i:$PYTHONPATH
-### Running the Services
+
+### Running the Services Locally
 
 1. Start the Flask API:
 ```shell
@@ -115,6 +115,56 @@ python3 -m workspace.src.api
 ```shell
 streamlit run workspace/app/main.py
 ```
+
+### Docker Deployment
+
+The project can be run using Docker Compose, which sets up all required services automatically.
+
+#### Prerequisites
+
+1. Install Docker and Docker Compose on your system
+2. Copy the environment variables file:
+   ```shell
+   cp .env.example .env
+   ```
+3. Update the `.env` file with your credentials:
+   - API_KEY: Your API key
+   - PROVIDER_URL: Your provider URL
+   - MongoDB credentials (if using MongoDB):
+     - USERNAME_MONGODB
+     - PASSWORD_MONGODB
+     - INSTANCE_MONGODB
+     - REGION_MONGODB
+     - PATH_TLS_CERTIFICATE_MONGODB
+
+#### Services
+
+The Docker Compose setup includes the following services:
+
+- **API Service** (Port 5000): Flask API server
+- **Streamlit Dashboard** (Port 8501): Web interface
+- **Redis** (Port 6379): Message broker for Celery
+- **Celery Workers**:
+  - LLM Worker: Handles language model tasks
+  - API Worker: Handles API-related tasks
+- **Flower** (Port 5555): Celery monitoring interface (credentials: admin/admin)
+
+#### Running with Docker Compose
+
+1. Build and start all services:
+   ```shell
+   docker compose up --build
+   ```
+
+2. Access the services:
+   - Streamlit Dashboard: http://localhost:8501
+   - Flask API: http://localhost:5000
+   - Flower Dashboard: http://localhost:5555
+
+3. Stop all services:
+   ```shell
+   docker compose down
+   ```
 
 ### Lint (check & fix)
 1. open a new terminal in the root of this repo and run:
