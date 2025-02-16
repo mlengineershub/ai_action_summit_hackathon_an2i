@@ -28,9 +28,9 @@ Our system implements a multi-faceted approach to medical analysis and prescript
 ### Generated Reports
 
 Access our sample medical reports and analysis:
-- [Sample Medical Report](reports/sample_medical_report.pdf)
-- [Prescription Analysis Report](reports/prescription_analysis.pdf)
-- [Patient History Summary](reports/patient_history.pdf)
+- [Technical Report](reports/Tech Report - Ai Action Summit.pdf)
+- [Business Plan](reports/buisness plan - action summit.pdf)
+
 
 ## Flask API Service
 
