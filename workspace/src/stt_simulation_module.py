@@ -1,41 +1,36 @@
-from typing import List, Generator
+from typing import List, Generator, Dict, Any
 import time
-from typing import Dict, Any
-
 
 def stream_speech_buffer(
     speeches: List[str], buffer_size: int = 512, delay: float = 0.1
 ) -> Generator[Dict[str, Any], None, None]:
     """
-    Stream speeches through a fixed-size buffer.
+    Streams speeches through a fixed-size buffer, yielding chunks of the speech with metadata.
 
     Args:
-        speeches (List[str]): List of speech texts to stream
-        buffer_size (int): Size of each buffer chunk in bytes
-        delay (float): Delay between buffer chunks in seconds
+        speeches (List[str]): A list of speech texts to be streamed.
+        buffer_size (int, optional): The size of each buffer chunk in bytes. Defaults to 512.
+        delay (float, optional): Delay time in seconds between yielding each chunk. Defaults to 0.1.
 
     Yields:
-        str: Buffer chunks of the speech
+        Dict[str, Any]: A dictionary containing:
+            - 'speech_number': Index of the current speech.
+            - 'chunk_number': Index of the current chunk.
+            - 'total_chunks': Total number of chunks in the speech.
+            - 'chunk_size': Size of the current chunk in bytes.
+            - 'content': Text content of the current chunk.
     """
     for speech_idx, speech in enumerate(speeches, 1):
-        # Convert speech to bytes
         speech_bytes = speech.encode("utf-8")
-
-        # Calculate number of chunks needed
         num_chunks = (len(speech_bytes) + buffer_size - 1) // buffer_size
 
         print(f"\nProcessing Speech {speech_idx}/{len(speeches)}")
         print(f"Total bytes: {len(speech_bytes)}")
         print(f"Number of chunks: {num_chunks}")
 
-        # Process speech in buffer-sized chunks
         for i in range(0, len(speech_bytes), buffer_size):
             chunk = speech_bytes[i : i + buffer_size]
-
-            # Convert chunk back to string for processing
             chunk_text = chunk.decode("utf-8", errors="ignore")
-
-            # Simulate processing delay
             time.sleep(delay)
 
             yield {
@@ -46,13 +41,9 @@ def stream_speech_buffer(
                 "content": chunk_text,
             }
 
-
-# Example usage
-def test_speech_streaming():
-    # Sample speeches (you would replace these with your actual speeches)
+def test_speech_streaming() -> None:
+    """Tests the speech streaming by reading speeches from a file and streaming them."""
     speeches = read_speeches_from_file("doctor-patient-dialogues.md")
-
-    # Stream the speeches through the buffer
     for chunk_data in stream_speech_buffer(speeches):
         print("\nChunk Information:")
         print(f"Speech: {chunk_data['speech_number']}/{len(speeches)}")
@@ -60,64 +51,48 @@ def test_speech_streaming():
         print(f"Size: {chunk_data['chunk_size']} bytes")
         print(f"Content: {chunk_data['content']}...")
 
-
-def read_speeches_from_file(file_path: str) -> list[str]:
+def read_speeches_from_file(file_path: str) -> List[str]:
     """
-    Read speeches from a text file and return them as a list of strings.
-    Each speech is assumed to be separated by a blank line.
+    Reads speeches from a specified text file, identifying and splitting speeches by numbered sections.
 
     Args:
-        file_path (str): Path to the file containing the speeches
+        file_path (str): Path to the file containing speeches.
 
     Returns:
-        list[str]: List of speeches, each as a string
+        List[str]: A list of extracted speech texts.
     """
     speeches = []
     current_speech = []
-
     try:
         with open(file_path, "r", encoding="utf-8") as file:
             for line in file:
-                # Remove leading/trailing whitespace
                 line = line.strip()
-
-                # If we encounter a numbered line (e.g., "1.", "2."), it's a new speech
                 if line and any(f"{i}." in line[:4] for i in range(1, 13)):
-                    # If we have collected lines for a previous speech, add it
                     if current_speech:
                         speeches.append(" ".join(current_speech))
                         current_speech = []
-                    # Start collecting the new speech, excluding the number
                     current_speech.append(line[line.find(".") + 1 :].strip())
-                # Add non-empty lines to current speech
                 elif line:
                     current_speech.append(line)
-
-            # Add the last speech if there is one
             if current_speech:
                 speeches.append(" ".join(current_speech))
-
     except FileNotFoundError:
         print(f"Error: File not found at {file_path}")
         return []
     except Exception as e:
         print(f"Error reading file: {str(e)}")
         return []
-
-    # Remove any empty speeches
     speeches = [speech.strip() for speech in speeches if speech.strip()]
-
     print(f"Successfully loaded {len(speeches)} speeches")
     return speeches
 
-
-def write_speeches_to_file(speeches: list[str], output_file: str):
+def write_speeches_to_file(speeches: List[str], output_file: str) -> None:
     """
-    Write speeches to a text file with proper formatting.
+    Writes speeches to a specified output file, numbering each speech.
 
     Args:
-        speeches (list[str]): List of speeches to write
-        output_file (str): Path to the output file
+        speeches (List[str]): A list of speeches to write.
+        output_file (str): Path to the output file.
     """
     try:
         with open(output_file, "w", encoding="utf-8") as file:
@@ -126,7 +101,6 @@ def write_speeches_to_file(speeches: list[str], output_file: str):
         print(f"Successfully wrote {len(speeches)} speeches to {output_file}")
     except Exception as e:
         print(f"Error writing to file: {str(e)}")
-
 
 if __name__ == "__main__":
     test_speech_streaming()
