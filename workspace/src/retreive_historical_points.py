@@ -1,61 +1,68 @@
-from typing import List
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
-from db_utils import get_mongo_client, get_database, get_table  # Import your utility functions
+from typing import List, Dict, Any
+from workspace.src.db_utils import get_database, get_table
 
 # Initialize Sentence Transformer model
 model = SentenceTransformer('all-MiniLM-L6-v2')
 
 def generate_embedding(text: str) -> List[float]:
     """Generate embedding for a given text using Sentence Transformers."""
-    return model.encode(text).tolist()  # Convert numpy array to list for MongoDB
+    return model.encode(text).tolist()
 
-def similarity_search(query: str, table_name: str = "consultation_data", top_k: int = 5) -> List[Dict[str, Any]]:
+def similarity_search(query: str, table_name: str = "Consultation", top_k: int = 3) -> List[Dict[str, Any]]:
     """
-    Perform a similarity search on the 'intelligent_summary' field using embeddings stored in MongoDB.
-    Returns the top-k most similar documents.
+    Perform similarity search using stored embeddings.
+    Returns top_k most similar documents with scores.
     """
-    # Get MongoDB client, database, and collection
-    client = get_mongo_client()
-    db = get_database(client)
+    # Get database connection
+    db = get_database()
     table = get_table(db, table_name)
 
-    # Generate embedding for the query
-    query_embedding = generate_embedding(query)
-    
-    # Retrieve all embeddings and relevant fields from MongoDB
-    embeddings = []
-    documents = []
-    for doc in table.find({}, {'embedding': 1, 'intelligent_summary': 1, 'reportID': 1}):
-        embeddings.append(doc['embedding'])
-        documents.append(doc)
-    
-    # Convert embeddings to numpy array
-    embeddings = np.array(embeddings)
-    
-    # Calculate cosine similarity between query embedding and all stored embeddings
-    similarities = cosine_similarity([query_embedding], embeddings)[0]
-    
-    # Sort documents by similarity score
-    sorted_indices = np.argsort(similarities)[::-1]
-    
-    # Return top_k most similar documents
+    # Generate query embedding and ensure proper shape
+    query_embedding = np.array(generate_embedding(query)).reshape(1, -1)
+
+    # Retrieve documents with embeddings
+    documents_with_embeddings = list(table.find(
+        {"embedding": {"$exists": True}},
+        {"embedding": 1, "intelligent_summary": 1, "reportID": 1, "_id": 0}
+    ))
+
+    # Handle empty collection case
+    if not documents_with_embeddings:
+        print("No documents with embeddings found in the collection.")
+        return []
+
+    # Prepare embeddings matrix
+    stored_embeddings = np.array([doc["embedding"] for doc in documents_with_embeddings])
+
+    # Calculate cosine similarities
+    similarity_scores = cosine_similarity(query_embedding, stored_embeddings)[0]
+
+    # Get top_k indices
+    top_indices = np.argsort(similarity_scores)[-top_k:][::-1]
+
+    # Prepare results
     results = []
-    for i in sorted_indices[:top_k]:
+    for idx in top_indices:
+        doc = documents_with_embeddings[idx]
         results.append({
-            'reportID': documents[i]['reportID'],
-            'intelligent_summary': documents[i]['intelligent_summary'],
-            'similarity_score': float(similarities[i])  # Convert numpy float to Python float
+            "reportID": doc["reportID"],
+            "intelligent_summary": doc["intelligent_summary"],
+            "similarity_score": float(similarity_scores[idx])
         })
-    
+
     return results
 
 # Example usage
 if __name__ == "__main__":
-    # Perform a similarity search
     query = "Patient with high fever and persistent cough"
     results = similarity_search(query, top_k=3)
-    for result in results:
-        print(f"Report ID: {result['reportID']}, Similarity Score: {result['similarity_score']}")
-        print(f"Summary: {result['intelligent_summary']}\n")
+    
+    print(f"Top {len(results)} similar consultations:")
+    for i, result in enumerate(results, 1):
+        print(f"\nResult {i}:")
+        print(f"Report ID: {result['reportID']}")
+        print(f"Similarity Score: {result['similarity_score']:.4f}")
+        print(f"Summary: {result['intelligent_summary']}")
