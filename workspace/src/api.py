@@ -97,8 +97,7 @@ def generate_medical_report() -> Union[Response, tuple[Response, int]]:
         "conversation",
         "patient_information",
         "medical_history",
-        "additional_notes",
-        "additional_medical_information",
+        "anomaly_detection",
     ]
 
     if not data or not all(field in data for field in required_fields):
@@ -108,8 +107,7 @@ def generate_medical_report() -> Union[Response, tuple[Response, int]]:
         data["conversation"],
         data["patient_information"],
         data["medical_history"],
-        data["additional_notes"],
-        data["additional_medical_information"],
+        data["anomaly_detection"],
     )
     return jsonify({"status": "processing", "task_id": task.id}), 202
 

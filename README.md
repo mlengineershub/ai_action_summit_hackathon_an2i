@@ -2,6 +2,36 @@
 
 A comprehensive medical prescription analysis system that leverages AI to enhance patient care and medical decision-making.
 
+## Our Approach
+
+Our system implements a multi-faceted approach to medical analysis and prescription safety:
+
+1. **Real-time Conversation Analysis**
+   - Automated extraction of medical context from doctor-patient dialogues
+   - Dynamic generation of relevant medical queries
+   - Intelligent follow-up question suggestions
+
+2. **Prescription Safety System**
+   - Automated anomaly detection in prescriptions
+   - Cross-referencing with patient medication history
+   - Real-time alerts for potential drug interactions
+   - Analysis of patient medication adherence patterns
+
+3. **Comprehensive Reporting**
+   - Side-by-side display of medical reports and prescription analysis
+   - Detailed symptom and pathology documentation
+   - Clear treatment plans with safety considerations
+   - Intelligent summarization of medical findings
+
+![Dashboard Screenshot](pictures/dashboard.png)
+
+### Generated Reports
+
+Access our sample medical reports and analysis:
+- [Sample Medical Report](reports/sample_medical_report.pdf)
+- [Prescription Analysis Report](reports/prescription_analysis.pdf)
+- [Patient History Summary](reports/patient_history.pdf)
+
 ## Flask API Service
 
 The project includes a robust Flask API that provides various medical analysis endpoints:
@@ -33,6 +63,7 @@ The project includes a user-friendly Streamlit dashboard that provides a graphic
 - Error handling and user feedback
 - Medical article search interface with abstract viewing
 - Report generation interface
+- Prescription anomaly detection with visual alerts
 
 ### Dashboard Pages
 
@@ -98,4 +129,3 @@ uv run mypy .
 1. open a new terminal in the root of this repo and run:
 ```shell
 uv run pytest
-```

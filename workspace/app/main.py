@@ -8,7 +8,12 @@ import time
 from workspace.src.utils import initialize_client
 from workspace.src.propose_medical_queries import generate_search_propositions
 from workspace.src.generate_follow_up_questions import generate_follow_up_questions
-from workspace.src.tasks import generate_search_summary_task, search_articles_task
+from workspace.src.tasks import (
+    generate_search_summary_task,
+    search_articles_task,
+    generate_report_task,
+    detect_anomalies_task,
+)
 
 # Initialize OpenAI client
 client = initialize_client()
@@ -20,7 +25,7 @@ st.title("Virtual Doctor Consultation")
 CONVERSATION_FLOW = [
     {
         "role": "assistant",
-        "content": "Hello, I'm Dr. AI. I'm here to help you today. What brings you in?",
+        "content": "Hello, I'm Dr. Ahmed. I'm here to help you today. What brings you in?",
     },
     {"role": "user", "content": "I have a headache and a sore throat."},
     {
@@ -112,9 +117,8 @@ with col2:
             )
             summarized_search = summary_task.get()  # Wait for results
 
-        st.markdown("**Select a search proposition:**")
         # Display the search results as markdown
-        st.markdown(summarized_search.get("summary", "No summary available"))
+        st.markdown(summarized_search.get("search_summary", "No summary available"))
 
     # --- Display Selected Search Result ---
     if st.session_state.selected_search:
@@ -165,7 +169,160 @@ with col2:
             for question in questions_response["follow_up_questions"]:
                 st.write("🔍", question)
 
+#         # Prescription Anomaly Detection
+#         st.subheader("Prescription Anomaly Detection")
+
+#         # Current Prescription Input
+#         current_prescription = st.text_area(
+#             "Current Prescription",
+#             placeholder="Enter the current prescription...",
+#             height=150
+#         )
+
+#         # Historical Prescription Input
+#         historical_prescription = st.text_area(
+#             "Patient's Medication History",
+#             placeholder="Enter patient's medication history...",
+#             height=150
+#         )
+
+#         # Example Data Button
+#         if st.button("Load Example Data"):
+#             st.session_state.current_prescription = """Patient: John Doe
+# Date of Birth: 01/01/1970
+# Date of Consultation: 01/01/2022
+# Doctor: Dr. Jane Smith
+# Medication: Amoxicillin 500mg
+# Dosage: 1 capsule every 8 hours
+# Duration: 7 days
+# Refill: 0
+# Instructions: Take with food"""
+#             st.session_state.historical_prescription = """Patient: John Doe
+# Date of Birth: 01/01/1970
+# Previous Prescription (01/12/2021):
+# Medication: Amoxicillin 500mg
+# Prescribed: 1 capsule every 8 hours for 7 days
+# Actual Usage: Patient took medication irregularly, missing several doses
+# Notes: Patient reported difficulty maintaining schedule"""
+#             st.rerun()
+
+#         # Check for Anomalies Button
+#         if st.button("Check for Prescription Anomalies"):
+#             if not current_prescription or not historical_prescription:
+#                 st.error("Please provide both current prescription and medication history.")
+#             else:
+#                 with st.spinner("Analyzing prescriptions for anomalies..."):
+#                     # Use Celery task for anomaly detection
+#                     anomaly_task = detect_anomalies_task.delay(
+#                         current_prescription,
+#                         historical_prescription
+#                     )
+#                     anomaly_results = anomaly_task.get()  # Wait for results
+
+#                     # Display anomalies
+#                     if "prescription_anomalies" in anomaly_results:
+#                         st.markdown("### Detected Anomalies")
+#                         for anomaly in anomaly_results["prescription_anomalies"]:
+#                             st.warning(f"⚠️ {anomaly}")
+#                     else:
+#                         st.success("No prescription anomalies detected.")
+
+# --- Report Generation ---
+if st.session_state.conversation_index >= len(CONVERSATION_FLOW):
+    st.subheader("Medical Report Generation")
+
+    # Mock patient information
+    patient_information = {
+        "name": "John Smith",
+        "age": "35",
+        "gender": "Male",
+        "ssn": "123-45-6789",
+        "contact": "(555) 123-4567",
+    }
+
+    # Mock medical history
+    medical_history = "No significant past medical history. No known allergies. No previous surgeries."
+
+    # Mock prescription data
+    current_prescription = """Patient: John Smith
+Date of Birth: 01/01/1988
+Date of Consultation: 02/16/2025
+Doctor: Dr. Ahmed
+Medication: Ibuprofen 400mg
+Dosage: 1 tablet every 6 hours
+Duration: 5 days
+Refill: 0
+Instructions: Take with food"""
+
+    historical_prescription = """Patient: John Smith
+Date of Birth: 01/01/1988
+Previous Prescription (02/10/2025):
+Medication: Paracetamol 500mg
+Prescribed: 1 tablet every 6 hours for 3 days
+Actual Usage: Patient reported taking 2 tablets every 4 hours
+Notes: Patient reported inadequate pain relief"""
+
+    if st.button("Generate Medical Report"):
+        with st.spinner("Generating medical report and analyzing prescriptions..."):
+            # Combine messages into conversation text
+            full_conversation = "\n".join(
+                f"{msg['role']}: {msg['content']}" for msg in st.session_state.messages
+            )
+
+            # Generate report using Celery task
+            report_task = generate_report_task.delay(
+                full_conversation,
+                patient_information,
+                medical_history,
+                "",  # Empty anomaly detection as we'll handle it separately
+            )
+
+            # Detect prescription anomalies using Celery task
+            anomaly_task = detect_anomalies_task.delay(
+                current_prescription, historical_prescription
+            )
+
+            # Get results from both tasks
+            report_result = report_task.get()
+            anomaly_results = anomaly_task.get()
+
+            # Create two columns for report and anomalies
+            report_col, anomaly_col = st.columns([2, 1])
+
+            # Display the report in the left column
+            with report_col:
+                st.markdown("### Generated Medical Report")
+                st.markdown("#### Symptoms")
+                for symptom in report_result["symptoms"]:
+                    st.markdown(f"- {symptom}")
+
+                st.markdown("#### Pathology")
+                st.markdown(report_result["pathology"])
+
+                st.markdown("#### Treatment Plan")
+                for treatment in report_result["treatment"]:
+                    st.markdown(f"- {treatment}")
+
+                st.markdown("#### Keywords")
+                st.markdown(", ".join(report_result["keywords"]))
+
+                st.markdown("#### Summary")
+                st.markdown(report_result["intelligent_summary"])
+
+            # Display anomalies in the right column
+            with anomaly_col:
+                st.markdown("### Prescription Analysis")
+                if (
+                    "prescription_anomalies" in anomaly_results
+                    and anomaly_results["prescription_anomalies"]
+                ):
+                    for anomaly in anomaly_results["prescription_anomalies"]:
+                        st.warning(f"⚠️ {anomaly}")
+                else:
+                    st.success("✅ No prescription anomalies detected")
+
 # --- Auto-Refresh ---
-st.empty()
-time.sleep(10)
-st.rerun()
+if st.session_state.conversation_index < len(CONVERSATION_FLOW):
+    st.empty()
+    time.sleep(10)
+    st.rerun()

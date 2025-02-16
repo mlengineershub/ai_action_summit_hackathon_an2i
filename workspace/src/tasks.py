@@ -85,8 +85,7 @@ def generate_report_task(
     conversation: str,
     patient_information: Dict[str, Any],
     medical_history: str,
-    additional_notes: str,
-    additional_medical_information: str,
+    anomaly_detection: str,
 ) -> Dict[str, Any]:
     """Celery task for generating medical reports."""
     prompt = generate_prompt(
@@ -94,7 +93,6 @@ def generate_report_task(
         conversation=conversation,
         patient_information=patient_information,
         medical_history=medical_history,
-        additional_notes=additional_notes,
-        additional_medical_information=additional_medical_information,
+        anomaly_detection=anomaly_detection,
     )
     return generate_report(client, prompt)
