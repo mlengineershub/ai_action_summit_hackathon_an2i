@@ -16,6 +16,23 @@ services:
     volumes:
       - ./workspace:/app/workspace
 
+  streamlit:
+    build: .
+    command: streamlit run --server.address=0.0.0.0 /app/workspace/app/main.py
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - celery-worker-llm
+      - celery-worker-api
+    volumes:
+      - ./workspace:/app/workspace
+    environment:
+    - PYTHONPATH=/app/workspace
+
+
   celery-worker-llm:
     build: .
     command: celery -A workspace.src.celery_app worker --loglevel=info --queues=llm

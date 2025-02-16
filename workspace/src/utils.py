@@ -26,7 +26,7 @@ def generate_prompt(prompt_template: str, **kwargs: Any) -> str:
 def generate_response(client: OpenAI, system_prompt: str, user_prompt: str) -> str:
     try:
         response = client.chat.completions.create(
-            model="mistral-large-latest",
+            model="ministral-3b-latest",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
@@ -46,7 +46,7 @@ def generate_structured_response(
 ) -> dict[str, Any]:
     try:
         response = client.beta.chat.completions.parse(
-            model="mistral-large-latest",
+            model="ministral-3b-latest",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},

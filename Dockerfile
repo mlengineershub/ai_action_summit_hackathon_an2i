@@ -12,7 +12,7 @@ COPY pyproject.toml README.md ./
 COPY workspace/ workspace/
 
 # Install Python dependencies
-RUN pip install --no-cache-dir .
+RUN pip install --no-cache-dir -e .
 
 # Copy the rest of the application code (e.g., .env)
 COPY .env .env

@@ -33,7 +33,7 @@ report_generation_template = """ Your task is to generate a full medical report 
 #### Generated Report
 """
 
-search_proposition_system_prompt = "You are a very helpful Medical AI Assistant. You have been asked to provide medical search propositions based on the conversation between a doctor and a patient."
+search_proposition_system_prompt = "You are a very helpful Medical AI Assistant. You have been asked to provide 4 most pertinent medical search propositions based on the conversation between a doctor and a patient."
 
 search_proposition_prompt_template = """Based on the current conversation between the doctor and the patient, provide relevant search propositions that could help the doctor in diagnosing the patient's condition. The search queries must be related to very niche medical topics that are related to the current conversation, and not general queires.
 Do not provide previously searched information.
@@ -44,7 +44,7 @@ Do not provide previously searched information.
 #### Previous Search History (Do not repeat these)
 {search_history}
 ---
-#### Search Propositions"""
+#### 4 Search Propositions"""
 
 summarize_search_system_prompt = "You are a Medical AI Assistant. You have been asked to provide a summary of many medical articles on a specific topic that a patient is suffering from. Your objective is to summarize the articles with a focus on the patient situation."
 
@@ -61,16 +61,16 @@ Ensure that the summary and the key_insights are informative and contain medical
 ---
 #### Summary"""
 
-follow_up_questions_system_prompt = "You are a Medical AI Assistant. You have been asked to generate follow-up questions based on a conversation between a doctor and a patient."
+follow_up_questions_system_prompt = "You are a Medical AI Assistant. You have been asked to generate 4 most petinent follow-up questions based on a conversation between a doctor and a patient."
 
 follow_up_questions_prompt_template = """Based on the conversation between the doctor and the patient, generate follow-up questions that the doctor might ask to further understand the patient's condition. The questions should be relevant to the symptoms and medical history discussed in the conversation.
 ---
 #### Conversation between Doctor and Patient
 {conversation}
 ---
-Follow-up Questions"""
+4 Follow-up Questions"""
 
-extract_medical_points_system_prompt = "You are a Medical AI Assistant. You have been asked to extract pertinent medical points from a conversation between a doctor and a patient. A pertinent point is any information that is crucial and that the doctor should not forget or overlook."
+extract_medical_points_system_prompt = "You are a Medical AI Assistant. You have been asked to extract 4 most pertinent  pertinent medical points from a conversation between a doctor and a patient. A pertinent point is any information that is crucial and that the doctor should not forget or overlook."
 
 extract_medical_points_prompt_template = """Extract the pertinent medical points from the conversation between the doctor and the patient. These points are crucial for the doctor to consider when diagnosing the patient's condition or planning the treatment.
 ---
@@ -80,7 +80,7 @@ extract_medical_points_prompt_template = """Extract the pertinent medical points
 #### Patient Previous Medical 
 {previous_medical_history}
 ---
-Pertinent Medical Points"""
+4 Pertinent Medical Points"""
 
 extract_ordonnance_data_system_prompt = "You are a Medical AI Assistant. You have been asked to extract the medication data from a doctor's prescription."
 
