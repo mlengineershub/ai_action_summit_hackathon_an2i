@@ -1,6 +1,6 @@
 from typing import List, Generator
 import time
-from typing import Generator, List, Dict, Any
+from typing import Dict, Any
 
 
 def stream_speech_buffer(
