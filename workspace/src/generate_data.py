@@ -13,10 +13,13 @@ from workspace.src.prompts import (
 from workspace.src.pydantic_models import ConsultationReport
 from pymongo import MongoClient
 from typing import Any, List, Tuple
-from openai import OpenAI
+from openai import OpenAIDict
 import urllib.parse
 from dotenv import load_dotenv
 import os
+from pymongo.database import Database
+from pymongo.collection import Collection
+from typing import Optional, Any, Dict, List
 
 load_dotenv()
 USERNAME_MONGODB: str = os.getenv("USERNAME_MONGODB", "")
@@ -24,7 +27,9 @@ PASSWORD_MONGODB: str = os.getenv("PASSWORD_MONGODB", "")
 INSTANCE_MONGODB: str = os.getenv("INSTANCE_MONGODB", "")
 REGION_MONGODB: str = os.getenv("REGION_MONGODB", "")
 PATH_TLS_CERTIFICATE_MONGODB: str = os.getenv("PATH_TLS_CERTIFICATE_MONGODB", "")
+
 CLIENT = initialize_client()
+
 
 
 def get_mongo_client() -> MongoClient:
@@ -43,13 +48,27 @@ def get_mongo_client() -> MongoClient:
     return client
     # flake8: noqa
 
-
-def initialize_db() -> MongoClient:
+def get_database(client: MongoClient)-> Database:
     client = get_mongo_client()
     db = client[USERNAME_MONGODB]
-    consultations = db["Consultation"]
-    consultations.create_index("keywords")  # Ensure keywords are indexed
     return db
+
+def get_table(db: Database,table_name: str) -> Collection:
+    return db[table_name]
+
+def create_index(table : Collection, fields: List[str]) -> None:
+    table.create_index(fields)
+
+def insert(table : Collection, document : Dict[str, Any] ) -> None:
+    table.insert_one(document)
+
+def find_one(table: Collection, query : Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    return table.find_one(query)
+
+def find(table: Collection, query : Dict[str, Any]) -> List[Dict[str, Any]]:
+    return table.find(query)
+
+
 
 
 def aggregate_medical_history(summaries: str) -> str:
@@ -83,13 +102,12 @@ def generate_report(client: OpenAI, prompt: str) -> dict[str, Any]:
     return response
 
 
-def fetch_related_consultations(db: MongoClient, ssn: str) -> Tuple[List[str], int]:
-    consultations = db["Consultation"]
+def fetch_related_consultations(db: Database, ssn: str) -> Tuple[List[str], int]:
+    consultations = get_table(db, table_name="Consultation")
     # get all consultations with the same patient ID
-    related = consultations.find({"social_security_number": ssn})
+    ssn_query = {"social_security_number": ssn}
+    related = find(consultations,ssn_query)
     summaries = [consultation["intelligent_summary"] for consultation in related]
-    # get reportID max for the patient
-    related = consultations.find({"social_security_number": ssn})
     last_reportID = max([consultation["reportID"] for consultation in related])
     return summaries, last_reportID
 
@@ -97,8 +115,9 @@ def fetch_related_consultations(db: MongoClient, ssn: str) -> Tuple[List[str], i
 def generate_and_insert_fake_data(
     ssn: str, report_date: str, conversation: str, patient_information: str
 ) -> None:
+    
     # Initialize MongoDB
-    db = initialize_db()
+    db = get_database()
 
     # Fetch related consultations and aggregate medical history
     related_summaries, last_reported_id = fetch_related_consultations(db, ssn)
@@ -131,7 +150,7 @@ def generate_and_insert_fake_data(
         "intelligent_summary": new_report["intelligent_summary"],
     }
 
-    db["Consultation"].insert_one(consultation_data)
+    insert(db["Consultation"],consultation_data)
     print("New consultation inserted successfully.")
 
 
